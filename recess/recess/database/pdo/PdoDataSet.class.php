@@ -97,6 +97,17 @@ class PdoDataSet implements Iterator, Countable, ArrayAccess, ISqlSelectOptions,
 			$this->hasResults = true;
 		}
 	}
+
+
+	/**
+	 * Query for meta data only.
+	 * for now this means the count.
+	 */
+	protected function metarealize() {
+		if(!$this->hasResults) {
+			$this->source->queryForCount($this->sqlBuilder);
+		}
+	}		
 	
 	/**
 	 * Return the SQL representation of this PdoDataSet
@@ -121,6 +132,12 @@ class PdoDataSet implements Iterator, Countable, ArrayAccess, ISqlSelectOptions,
 		return $this->source->getResultCount($this->sqlBuilder);
 	}
 	
+	public function sourceCount() {
+		if(!$this->hasResults) {$this->metarealize();}
+		return $this->source->rowCount;
+	}
+
+
 	public function exists() {
 		return (bool)iterator_count($this);
 	}

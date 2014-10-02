@@ -22,6 +22,8 @@ class PdoDataSource extends PDO {
 	const CACHE_PREFIX = 'Recess::PdoDS::';
 	
 	protected $provider = null;
+
+	public $rowCount = 0;
 	
 	protected $cachePrefix;
 	
@@ -117,8 +119,20 @@ class PdoDataSource extends PDO {
 		$statement = $this->provider->getStatementForBuilder($builder,'select',$this);
 		$statement->setFetchMode(PDO::FETCH_CLASS, $className, array());
 		$statement->execute();
+		$this->rowCount = $statement->rowCount();
+		
 		return $this->provider->fetchAll($statement);
 	}
+
+	/**
+	 * Only grab the resulting count from the current query
+	 *
+	 */
+	function queryForCount(SqlBuilder $builder) {
+		$statement = $this->provider->getStatementForBuilder($builder, 'select', $this);
+		$statement->execute();
+		$this->rowCount = $statement->rowCount();
+	}		
 	
 	/**
 	 * Execute the query from a SqlBuilder instance.
